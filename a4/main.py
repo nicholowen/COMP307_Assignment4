@@ -6,8 +6,7 @@ import numpy as np
 def main():
     # Paths to the data and solution files.
     vrp_file = "data/n32-k5.vrp"  # "data/n80-k10.vrp"
-    sol_file = "data/n32-k5.sol"  # "data/n80-k10.sol"
-
+    sol_file = "data/n32-k5.sol"  # "data/n80-k10.sol"\
     # vrp_file = "data/n80-k10.vrp"
     # sol_file = "data/n80-k10.sol"
 
@@ -24,9 +23,9 @@ def main():
     # Uncomment it to do your assignment!
 
     nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
-    # nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
-    # print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
-    # utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
+    nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
+    print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
+    utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
 
     # Executing and visualizing the saving VRP heuristic.
     # Uncomment it to do your assignment!
@@ -37,18 +36,8 @@ def main():
     # utility.visualise_solution(sh_solution, px, py, depot, "Savings Heuristic")
 
 
-class node:
-    def __init__(self, x, y, visited, demand):
-        self.x = x
-        self.y = y
-        self.visited = visited
-        self.demand = demand
-
-    def print(self):
-        print("X: ", self.x, " Y: ", self.y)
-
-
 def nearest_neighbour_heuristic(px, py, demand, capacity, depot):
+
     """
     Algorithm for the nearest neighbour heuristic to generate VRP solutions.
 
@@ -59,41 +48,35 @@ def nearest_neighbour_heuristic(px, py, demand, capacity, depot):
     :param depot: Depot.
     :return: List of vehicle routes (tours).
     """
-    # initialise node objects
-    root_node = node(px[0], px[0], False, demand[0])
-    nodes = list()
-    for i in range(1, len(px)):
-        nodes.append(node(px[i], py[i], False, demand[i]))
-
     # TODO - Implement the Nearest Neighbour Heuristic to generate VRP solutions.
 
     # NN VRP should be 1146.40
-    visited = list()
-    solution = list()
-    total = 0
+
+    unvisited = []
+    for i in range(1, len(px)):
+        unvisited.append(i)
+
+    visited, solution, route = [], [], []
     demand_total = 0
-    start = root_node
-    counter = 0
-    while len(nodes) != 0:
-        for n in nodes:
-            if n not in visited:
-                a, b = utility.find_closest_node(start, nodes)
-                start = n
-                if demand_total + a.demand <= 100:
-                    demand_total += a.demand
-                    visited.append(a)
-                    nodes.remove(a)
-                    solution.append(a)
-                    total += b
-                else:
-                    start = root_node
-                    demand_total = 0
-                    counter += 1
+    start = depot
 
-    print(total)
-    print(counter)
+    while len(unvisited) > 0:
+        n = utility.find_closest_node(px, py, start, unvisited)
+        if demand_total + demand[n] <= capacity:
+            start = n
+            unvisited.remove(n)
+            visited.append(n)
+            route.append(n)
+            demand_total += demand[n]
+        else:
+            solution.append(route)
+            route = []
+            start = depot
+            demand_total = 0
 
-    return None
+    print(solution)
+
+    return solution
 
 
 def savings_heuristic(px, py, demand, capacity, depot):

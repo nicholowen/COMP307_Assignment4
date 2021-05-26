@@ -3,18 +3,17 @@ import numpy as np
 import math
 
 
-def find_closest_node(root, nodes):
+def find_closest_node(px, py, root, nodes):
     """find minumum node from a list of nodes"""
 
     dist = {}
 
     for i in range(len(nodes)):
-        if not nodes[i].visited:
-            distance = calculate_euclidean_distance([root.x, nodes[i].x], [root.y, nodes[i].y], 0, 1)
-            if distance != 0:
-                dist[nodes[i]] = distance
+        distance = calculate_euclidean_distance(px, py, root, nodes[i])
+        if distance > 0:
+            dist[nodes[i]] = distance
 
-    return min(dist, key=dist.get), min(dist.values())
+    return min(dist, key=dist.get)
 
 
 def calculate_euclidean_distance(px, py, index1, index2):
@@ -51,11 +50,9 @@ def calculate_total_distance(routes, px, py, depot):
 
     for i in range(len(routes)):
         route_distance = 0
-        index1 = 0
-        count = 0
+        index1 = depot
         for j in routes[i]:
             route_distance += calculate_euclidean_distance(px, py, index1, j)
-            count += 1
             index1 = j
         route_distance += calculate_euclidean_distance(px, py, index1, 0)
         total_distance += route_distance

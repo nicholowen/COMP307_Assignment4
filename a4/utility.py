@@ -1,21 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import math
-
-
-def find_closest_node(px, py, root, nodes):
-    """find minumum node from a list of nodes"""
-
-    min_dist = 9999999.0
-    index = 0
-    for n in nodes:
-        distance = calculate_euclidean_distance(px, py, root, n)
-        if distance > 0:
-            if distance <= min_dist:
-                min_dist = distance
-                index = n
-
-    return index
 
 
 def calculate_euclidean_distance(px, py, index1, index2):
@@ -28,7 +12,6 @@ def calculate_euclidean_distance(px, py, index1, index2):
     :param index2: Node 2 index in the coordinate list.
     :return: Euclidean distance between node 1 and 2.
     """
-
     # Euclidean distance function.
     dist = math.sqrt(pow(px[index1] - px[index2], 2) + pow(py[index1] - py[index2], 2))
 
@@ -45,17 +28,17 @@ def calculate_total_distance(routes, px, py, depot):
     :param depot: Depot.
     :return: Total tour euclidean distance.
     """
-
-    # TODO - Implement function for finding the total euclidean distance of the learned tour.
-
     total_distance = 0
 
     for i in range(len(routes)):
         index1 = depot
         for j in routes[i]:
-            total_distance += calculate_euclidean_distance(px, py, index1, j)
-            index1 = j
-        total_distance += calculate_euclidean_distance(px, py, index1, 0)
+            if j != depot:
+                # starts at the depot, and finds the distance to each consecutive node in the route
+                total_distance += calculate_euclidean_distance(px, py, index1, j)
+                index1 = j
+        # adds distance from last node in route back to depot
+        total_distance += calculate_euclidean_distance(px, py, index1, depot)
 
     return total_distance
 
